@@ -63,9 +63,7 @@
 (defn persist-file
   [path data]
   (if (= (spit path data) nil)
-    (info "Created file:" path)
-    (error "There was some error")))
-      
+    (info "Created file:" path)))
 
 (defn process-one-file
   [full-file-path output-dir]
@@ -73,11 +71,9 @@
         lom (helper/csv->map full-file-path)
         ddl-string (process-csv-map lom table-name)
         target-file (str output-dir "/" table-name ".ddl.sql")]
-    (info "This is the file I'll use:" full-file-path)
-    (info "DS: " lom)
-    (persist-file target-file ddl-string)
-    ;;  (catch Exception e (str "caught exception: " (.getMessage e))))
-    ))
+    (try 
+      (persist-file target-file ddl-string)
+      (catch Exception e (str "caught exception: " (.getMessage e))))))
 
 (defn -main
   "I don't do a whole lot ... yet."

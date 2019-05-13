@@ -1,10 +1,15 @@
 (ns profile2ddl.core
   (:gen-class)
   (:require [clojure.string :as str]
+            [taoensso.timbre :as timbre
+             :refer [log  trace  debug  info  warn  error  fatal  report]]
+            [clojure.tools.cli :refer [parse-opts]]
             [profile2ddl.helper :as helper]))
 
-(def directory-with-profiles "/Users/walkiewk/code/python/profile-to-ddl/resources")
-(def directory-for-ddl "/Users/walkiewk/code/python/profile-to-ddl/resources/ddl")
+(def cli-options
+  [["-i" "--input DIR" "Directory with profiles csv files produced by xsv tool"]
+   ["-o" "--output DIR" "Directory where DDL sql files will be written"]
+   ["-h" "--help"]])
 
 (defn files-to-process
   [dir]
@@ -12,15 +17,28 @@
        (map #(.getAbsolutePath %))
        (filter #(str/ends-with? % ".csv"))))
 
+
+(defn int-or-bigint
+  "Check for Redshift integer min, max values. Returns BIGINT if crossed."
+  [min max]
+  (if (or (> max 2147483647) (< min -2147483648))
+    " BIGINT"
+    " INTEGER"))
+
+
 (defn emit-ddl-string
   [append-comma? m]
   (let [field-name (:field m)
         field-type (:type m)
+        max-numeric (:max m)
+        min-numeric (:min m)
         field-max-length (:max_length m)
         line-terminator (if append-comma? ",\n" "")
+        ;; int-or-bigint-value (int-or-bigint max-numeric)
         row-ddl (cond (= field-type "Unicode") (str field-name " VARCHAR" "(" field-max-length ")" line-terminator)
-                      (= field-type "Integer") (str field-name " INTEGER" line-terminator)
-                      (= field-type "Float")   (str field-name " DECIMAL" line-terminator)
+                      (= field-type "Integer") (str field-name (int-or-bigint (helper/parse-string-to-number min-numeric)
+                                                                              (helper/parse-string-to-number max-numeric)) line-terminator)
+                      (= field-type "Float")   (str field-name " DECIMAL(38,10)" line-terminator)
                       (= field-type "NULL")    (str field-name " VARCHAR(1)" line-terminator)
                       (= field-type "NaN")     (str field-name " VARCHAR(1)" line-terminator))]
     (->> (str/split row-ddl #" ")
@@ -42,17 +60,42 @@
                    table-end-stm])
          (str/join))))
 
+(defn persist-file
+  [path data]
+  (if (= (spit path data) nil)
+    (info "Created file:" path)
+    (error "There was some error")))
+      
+
 (defn process-one-file
-  [full-file-path]
+  [full-file-path output-dir]
   (let [table-name (helper/get-table-name-from-file full-file-path)
         lom (helper/csv->map full-file-path)
-        ddl-string (process-csv-map lom table-name)]
-    (spit (str directory-for-ddl "/" table-name ".ddl.sql") ddl-string)))
+        ddl-string (process-csv-map lom table-name)
+        target-file (str output-dir "/" table-name ".ddl.sql")]
+    (info "This is the file I'll use:" full-file-path)
+    (info "DS: " lom)
+    (persist-file target-file ddl-string)
+    ;;  (catch Exception e (str "caught exception: " (.getMessage e))))
+    ))
 
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (println "Hi there!")
-  (->> (files-to-process directory-with-profiles)
-     (map #(process-one-file %))))
+  (let [cli (parse-opts args cli-options)
+        input-dir (->> cli :options :input)
+        output-dir (->> cli :options :output)]
+    (->> (files-to-process input-dir)
+         (map #(process-one-file % output-dir)))))
+
+;; (defn -main
+;;   "I don't do a whole lot ... yet."
+;;   [& args]
+;;   (let [cli (parse-opts args cli-options)
+;;         input-dir (->> cli :options :input)
+;;         output-dir (->> cli :options :output)
+;;         files (files-to-process input-dir)]
+;;     (pr-str files)))
+
+;; (-main "-i/Users/walkiewk/code/python/profile-to-ddl/resources" "-o/Users/walkiewk/Downloads/ddl")
 

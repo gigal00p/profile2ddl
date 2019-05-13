@@ -35,6 +35,14 @@
       (do (error "Passed path is not a directory")
           (throw (Exception. "Passed path is not a directory"))))))
 
+
+(defn check-path-exist?
+  [fs-path]
+  (let [path (io/file fs-path)]
+    (if (.isDirectory path)
+      true
+      (throw (Exception. "Passed path is not directory or does not exists")))))
+        
 (defn get-table-name-from-file
   [file-path]
   (let [file-name (->> (str/split file-path #"/")
@@ -59,3 +67,4 @@
            sort 
            (map #(str "." %) )
            distinct))
+

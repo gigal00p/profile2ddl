@@ -12,6 +12,7 @@
    ["-h" "--help"]])
 
 (defn files-to-process
+  "Returns paths to csv profiles files produced by xsv table tool."
   [dir]
   (->> (helper/get-full-path-files-in-dir dir)
        (map #(.getAbsolutePath %))
@@ -81,10 +82,7 @@
         input-dir (->> cli :options :input)
         output-dir (->> cli :options :output)
         files (files-to-process input-dir)]
-    (do (info "Input directory is" input-dir)
-        (info "Output directory is" output-dir)
+    (do (if (helper/check-path-exist? input-dir) (info "Input directory is" input-dir))
+        (if (helper/check-path-exist? output-dir) (info "Output directory is" output-dir))
         (info "Files to process are" (pr-str files)))
     (doall (map #(process-one-file % output-dir) files))))
-
-;; (-main "-i/home/krzysztof/Pobrane/csv/profile" "-o/home/krzysztof/Pobrane/csv/profile/ddl")
-;; java -jar target/uberjar/profile2ddl-0.1.0-SNAPSHOT-standalone.jar -i /home/krzysztof/Pobrane/csv/profile -o /home/krzysztof/Pobrane/csv/profile/ddl

@@ -43,7 +43,8 @@
   (let [path (io/file fs-path)]
     (if (.isDirectory path)
       true
-      (throw (Exception. "Passed path is not directory or does not exists")))))
+      (do (error "Passed path is not directory or does not exists:" (str "'"fs-path"'"))
+          (throw (Exception. "Passed path is not directory or does not exists: "))))))
         
 (defn get-table-name-from-file
   [file-path]

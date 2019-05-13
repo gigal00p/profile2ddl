@@ -1,8 +1,8 @@
 (ns profile2ddl.core
   (:gen-class)
   (:require [clojure.string :as str]
-            [taoensso.timbre :as timbre
-             :refer [log  trace  debug  info  warn  error  fatal  report]]
+            [clojure.java.io :as io]
+            [taoensso.timbre :as timbre :refer [log  trace  debug  info  warn  error  fatal  report]]
             [clojure.tools.cli :refer [parse-opts]]
             [profile2ddl.helper :as helper]))
 
@@ -17,14 +17,12 @@
        (map #(.getAbsolutePath %))
        (filter #(str/ends-with? % ".csv"))))
 
-
 (defn int-or-bigint
   "Check for Redshift integer min, max values. Returns BIGINT if crossed."
   [min max]
   (if (or (> max 2147483647) (< min -2147483648))
     " BIGINT"
     " INTEGER"))
-
 
 (defn emit-ddl-string
   [append-comma? m]
@@ -62,8 +60,9 @@
 
 (defn persist-file
   [path data]
-  (if (= (spit path data) nil)
-    (info "Created file:" path)))
+  (info "Writing result file" path)
+  (with-open [wrtr (io/writer path)]
+    (.write wrtr data)))
 
 (defn process-one-file
   [full-file-path output-dir]
@@ -75,15 +74,6 @@
       (persist-file target-file ddl-string)
       (catch Exception e (str "caught exception: " (.getMessage e))))))
 
-;; (defn -main
-;;   "I don't do a whole lot ... yet."
-;;   [& args]
-;;   (let [cli (parse-opts args cli-options)
-;;         input-dir (->> cli :options :input)
-;;         output-dir (->> cli :options :output)]
-;;     (->> (files-to-process input-dir)
-;;          (map #(process-one-file % output-dir)))))
-
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
@@ -91,9 +81,10 @@
         input-dir (->> cli :options :input)
         output-dir (->> cli :options :output)
         files (files-to-process input-dir)]
-    (do
-     (->> files (map #(process-one-file % output-dir)))
-     (println args))))
+    (do (info "Input directory is" input-dir)
+        (info "Output directory is" output-dir)
+        (info "Files to process are" (pr-str files)))
+    (doall (map #(process-one-file % output-dir) files))))
 
-;; (-main "-i/Users/walkiewk/code/python/profile-to-ddl/resources" "-o/Users/walkiewk/Downloads/ddl")
-
+;; (-main "-i/home/krzysztof/Pobrane/csv/profile" "-o/home/krzysztof/Pobrane/csv/profile/ddl")
+;; java -jar target/uberjar/profile2ddl-0.1.0-SNAPSHOT-standalone.jar -i /home/krzysztof/Pobrane/csv/profile -o /home/krzysztof/Pobrane/csv/profile/ddl

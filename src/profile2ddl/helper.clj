@@ -6,8 +6,8 @@
             [clojure.reflect :as r]
             [clojure-csv.core :as csv]
             [taoensso.timbre :as timbre
-             :refer [log  trace  debug  info  warn  error  fatal  report]]
-            ))
+             :refer [log  trace  debug  info  warn  error  fatal  report]]))
+
 
 (defn parse-string-to-number
   "Reads a number from a string. Returns nil if not a number."
@@ -15,11 +15,13 @@
   (cond (re-find #"^-?\d+\.?\d*$" s) (read-string s)
     :else nil))
 
+
 (defn is-numeric-string?
   [^String s]
   (if (= (number? (parse-string-to-number s)) true)
     true
     false))
+
 
 (defn get-full-path-files-in-dir
   "Returns absolute path of files in the passed directory.
@@ -49,6 +51,7 @@
                        last)]
     (first (str/split file-name #"\."))))
 
+
 (defn csv->map
   [path-to-csv-profile]
   (with-open [in-file (io/reader path-to-csv-profile)]
@@ -67,4 +70,3 @@
            sort 
            (map #(str "." %) )
            distinct))
-

@@ -75,23 +75,25 @@
       (persist-file target-file ddl-string)
       (catch Exception e (str "caught exception: " (.getMessage e))))))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (let [cli (parse-opts args cli-options)
-        input-dir (->> cli :options :input)
-        output-dir (->> cli :options :output)]
-    (->> (files-to-process input-dir)
-         (map #(process-one-file % output-dir)))))
-
 ;; (defn -main
 ;;   "I don't do a whole lot ... yet."
 ;;   [& args]
 ;;   (let [cli (parse-opts args cli-options)
 ;;         input-dir (->> cli :options :input)
-;;         output-dir (->> cli :options :output)
-;;         files (files-to-process input-dir)]
-;;     (pr-str files)))
+;;         output-dir (->> cli :options :output)]
+;;     (->> (files-to-process input-dir)
+;;          (map #(process-one-file % output-dir)))))
+
+(defn -main
+  "I don't do a whole lot ... yet."
+  [& args]
+  (let [cli (parse-opts args cli-options)
+        input-dir (->> cli :options :input)
+        output-dir (->> cli :options :output)
+        files (files-to-process input-dir)]
+    (do
+     (->> files (map #(process-one-file % output-dir)))
+     (println args))))
 
 ;; (-main "-i/Users/walkiewk/code/python/profile-to-ddl/resources" "-o/Users/walkiewk/Downloads/ddl")
 

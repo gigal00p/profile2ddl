@@ -2,9 +2,15 @@
   (:gen-class)
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
-            [taoensso.timbre :as timbre :refer [log  trace  debug  info  warn  error  fatal  report]]
+            [clojure.spec.alpha :as s]
+            [taoensso.timbre :as timbre
+             :refer [log  trace  debug  info  warn  error  fatal]]
             [clojure.tools.cli :refer [parse-opts]]
-            [profile2ddl.helper :as helper]))
+            [eftest.runner :refer [find-tests run-tests]]
+            [eftest.report :refer [report-to-file]]
+            [eftest.report.junit :as ju]
+            [profile2ddl.helper :as helper]
+            [profile2ddl.core.specs]))
 
 (def cli-options
   [["-i" "--input DIR" "Directory with profiles csv files produced by xsv tool"]
@@ -28,18 +34,17 @@
 (defn emit-ddl-string
   [append-comma? m]
   (let [field-name (:field m)
-        field-type (:type m)
+        field-type (->> (:type m) .toLowerCase keyword)
         max-numeric (:max m)
         min-numeric (:min m)
         field-max-length (:max_length m)
         line-terminator (if append-comma? ",\n" "")
-        ;; int-or-bigint-value (int-or-bigint max-numeric)
-        row-ddl (cond (= field-type "Unicode") (str field-name " VARCHAR" "(" field-max-length ")" line-terminator)
-                      (= field-type "Integer") (str field-name (int-or-bigint (helper/parse-string-to-number min-numeric)
-                                                                              (helper/parse-string-to-number max-numeric)) line-terminator)
-                      (= field-type "Float")   (str field-name " DECIMAL(38,10)" line-terminator)
-                      (= field-type "NULL")    (str field-name " VARCHAR(1)" line-terminator)
-                      (= field-type "NaN")     (str field-name " VARCHAR(1)" line-terminator))]
+        row-ddl (cond (= field-type :unicode) (str field-name " VARCHAR" "(" field-max-length ")" line-terminator)
+                      (= field-type :integer) (str field-name (int-or-bigint (helper/parse-string-to-number min-numeric)
+                                                                             (helper/parse-string-to-number max-numeric)) line-terminator)
+                      (= field-type :float)   (str field-name " DECIMAL(38,10)" line-terminator)
+                      (= field-type :null)    (str field-name " VARCHAR(1)" line-terminator)   ; NULL type will be represented in database as VARCHAR(1)
+                      (= field-type :nan)     (str field-name " VARCHAR(1)" line-terminator))] ; NaN type will be represented in database as VARCHAR(1)
     (->> (str/split row-ddl #" ")
          (apply format "    %-20s %s")
          (into []))))

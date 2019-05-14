@@ -3,12 +3,12 @@
   (:require [clojure.spec.alpha :as s]))
 
 (s/def ::path string?)
+
 (s/def ::xsv-type #{:unicode :float :integer})
 
 (s/def ::redshit-integer-max 2147483647)
+
 (s/def ::redshit-integer-min -2147483648)
-
-
 
 (s/def ::redshift-rezerved-words #{"AES128"
                                    "AES256"

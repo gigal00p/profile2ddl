@@ -10,7 +10,7 @@
             [eftest.report :refer [report-to-file]]
             [eftest.report.junit :as ju]
             [profile2ddl.helper :as helper]
-            [profile2ddl.core.specs]))
+            [profile2ddl.specs]))
 
 (def cli-options
   [["-i" "--input DIR" "Directory with profiles csv files produced by xsv tool"]
@@ -31,9 +31,13 @@
     " BIGINT"
     " INTEGER"))
 
+(defn normalize-column-name
+  [s]
+  (.toLowerCase (str/replace s #"\s+" "")))
+
 (defn emit-ddl-string
   [append-comma? m]
-  (let [field-name (:field m)
+  (let [field-name (->> (:field m) normalize-column-name)
         field-type (->> (:type m) .toLowerCase keyword)
         max-numeric (:max m)
         min-numeric (:min m)

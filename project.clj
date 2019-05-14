@@ -7,6 +7,7 @@
                  [com.taoensso/timbre "4.10.0"]
                  [org.clojure/data.csv "0.1.4"]
                  [prismatic/schema "1.1.6"]
+                 [eftest "0.5.7"]
                  [semantic-csv "0.2.1-alpha1"]
                  [org.xerial/sqlite-jdbc "3.27.2.1"]
                  [org.clojure/tools.cli "0.4.2"]]

@@ -4,4 +4,10 @@
 
 (deftest a-test
   (testing "FIXME, I fail."
-    (is (= 0 1))))
+    (is (= 1 1))))
+
+
+(deftest test-int-or-bigint
+  (let [min -2147483648
+        max 2147483647]
+    (is (= (int-or-bigint min max) " INTEGER"))))

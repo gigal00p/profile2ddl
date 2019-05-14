@@ -1,4 +1,4 @@
-(ns profile2ddl.core.specs
+(ns profile2ddl.specs
   (:gen-class)
   (:require [clojure.spec.alpha :as s]))
 

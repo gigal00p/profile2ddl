@@ -1,12 +1,15 @@
 (ns profile2ddl.helper
   (:gen-class)
-  (:require [clojure.string :as str]
+  (:require [taoensso.timbre :as timbre :refer [log  trace  debug  info  warn  error  fatal]]
+            [clojure.string :as str]
             [clojure.java.io :as io]
             [semantic-csv.core :as sc]
+            [clojure.spec.alpha :as s]
+            [expound.alpha :as expound]
+            [orchestra.spec.test :as st]
             [clojure.reflect :as r]
             [clojure-csv.core :as csv]
-            [taoensso.timbre :as timbre
-             :refer [log  trace  debug  info  warn  error  fatal  report]]))
+            [profile2ddl.helper-schemas :as hs]))
 
 
 (defn parse-string-to-number
@@ -46,6 +49,7 @@
       (do (error "Passed path is not directory or does not exists:" (str "'"fs-path"'"))
           (throw (Exception. "Passed path is not directory or does not exists: "))))))
         
+
 (defn get-table-name-from-file
   [file-path]
   (let [file-name (->> (str/split file-path #"/")
@@ -71,3 +75,46 @@
            sort 
            (map #(str "." %) )
            distinct))
+
+
+(defn- is-reserved-db-word?
+  [word]
+  (s/valid? ::hs/redshift-rezerved-words (.toUpperCase word)))
+
+
+(s/fdef is-reserved-db-word?
+  :args (s/cat :word string?)
+  :ret boolean?)
+
+
+(defn normalize-column-name
+  [s]
+  (.toLowerCase (str/replace s #"\s+" "")))
+
+
+(defn validate-column-name
+  [s]
+  (if (is-reserved-db-word? s)
+    (do (warn "Field" [s] "is database reserved keyword. DDL statement will probably fail"))))
+
+
+(defn int-or-bigint
+  "Check for Redshift integer min, max values. Returns BIGINT if crossed."
+  [min max]
+  (if (or (> max 2147483647) (< min -2147483648))
+    " BIGINT"
+    " INTEGER"))
+
+
+(defn persist-file
+  [path data]
+  (info "Writing result file" path)
+  (with-open [wrtr (io/writer path)]
+    (.write wrtr data)))
+
+(defn files-to-process
+  "Returns paths to csv profiles files produced by xsv table tool."
+  [dir]
+  (->> (get-full-path-files-in-dir dir)
+       (map #(.getAbsolutePath %))
+       (filter #(str/ends-with? % ".csv"))))

@@ -1,10 +1,12 @@
 # profile2ddl
 
-FIXME: description
+This program converts output created by runnig `xsv stats` against csv file into sql `create table` file.
+You can find xsv [here](https://github.com/BurntSushi/xsv).
 
 ## Installation
 
-Download from http://example.com/FIXME.
+Tou must have [Leiningen](https://leiningen.org/) installed. Once done clone this repo and run `lein uberjar` inside it.
+Under target/uberjar you'll find standalone jar to run.
 
 ## Usage
 
@@ -14,23 +16,16 @@ FIXME: explanation
 
 ## Options
 
-FIXME: listing of options this app accepts.
+-i PATH - path with csv profile files created by `xsv stats`
+-o PATH - path where the ddl files will be written
 
 ## Examples
 
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+`java -jar profile2ddl-0.1.0-SNAPSHOT-standalone.jar -i ~/code/csv/profiles -o ~/code/csv/ddl`
 
 ## License
 
-Copyright © 2019 FIXME
+Copyright © 2019 Krzysztof Walkiwicz
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at

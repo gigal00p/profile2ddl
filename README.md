@@ -14,8 +14,8 @@ Under target/uberjar you'll find standalone jar to run.
 
 ## Options
 
-`-i PATH` - path with csv profile files created by `xsv stats`
-`-o PATH` - path where the ddl files will be written
+* `-i PATH` - path with csv profile files created by `xsv stats`
+* `-o PATH` - path where the ddl files will be written
 
 ## Examples
 

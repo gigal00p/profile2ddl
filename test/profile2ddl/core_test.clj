@@ -2,17 +2,49 @@
   (:require [clojure.test :refer :all]
             [profile2ddl.core :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 1 1))))
-
-
-(deftest test-int-or-bigint
-  (let [min -2147483648
-        max 2147483647]
-    (is (= (int-or-bigint min max) " INTEGER"))))
-
-
-(deftest test-normalize-column-name
-  (let [multi-word-column " DNA SEQUENCE NUMER"]
-    (is (= (normalize-column-name multi-word-column) "dnasequencenumer"))))
+(deftest test-emit-ddl-string
+  (let [input {:min "1",
+               :mean "2.949857921294019",
+               :stddev "3.241907447432876",
+               :field "EESTATU",
+               :type "Integer",
+               :max_length "1",
+               :max "9",
+               :min_length "1",
+               :sum "314226677"}
+        result [\space
+                \space
+                \space
+                \space
+                \e
+                \e
+                \s
+                \t
+                \a
+                \t
+                \u
+                \space
+                \space
+                \space
+                \space
+                \space
+                \space
+                \space
+                \space
+                \space
+                \space
+                \space
+                \space
+                \space
+                \space
+                \I
+                \N
+                \T
+                \E
+                \G
+                \E
+                \R
+                \,
+                \newline]]
+    (is (= (emit-ddl-string true input) result))))
+ 

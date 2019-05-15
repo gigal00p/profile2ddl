@@ -10,7 +10,9 @@
                  [eftest "0.5.7"]
                  [semantic-csv "0.2.1-alpha1"]
                  [org.xerial/sqlite-jdbc "3.27.2.1"]
-                 [org.clojure/tools.cli "0.4.2"]]
+                 [org.clojure/tools.cli "0.4.2"]
+                 [orchestra "2018.12.06-2"]
+                 [expound "0.7.2"]]
   :plugins [[lein-eftest "0.5.7"]]
   :main ^:skip-aot profile2ddl.core
   :target-path "target/%s"

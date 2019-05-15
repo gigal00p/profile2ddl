@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [profile2ddl.helper :refer :all]))
 
+
 (deftest test-normalize-column-name
   (let [multi-word-column " DNA SEQUENCE NUMER"]
     (is (= (normalize-column-name multi-word-column) "dnasequencenumer"))))

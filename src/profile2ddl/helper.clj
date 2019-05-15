@@ -112,6 +112,7 @@
   (with-open [wrtr (io/writer path)]
     (.write wrtr data)))
 
+
 (defn files-to-process
   "Returns paths to csv profiles files produced by xsv table tool."
   [dir]

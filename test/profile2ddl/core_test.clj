@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [profile2ddl.core :refer :all]))
 
+
 (deftest test-emit-ddl-string
   (let [input {:min "1",
                :mean "2.949857921294019",

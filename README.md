@@ -5,7 +5,7 @@ You can find xsv [here](https://github.com/BurntSushi/xsv).
 
 ## Installation
 
-Tou must have [Leiningen](https://leiningen.org/) installed. Once done clone this repo and run `lein uberjar` inside it.
+You must have [Leiningen](https://leiningen.org/) installed. Once done clone this repo and run `lein uberjar` inside it.
 Under target/uberjar you'll find standalone jar to run.
 
 ## Usage

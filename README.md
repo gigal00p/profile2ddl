@@ -10,14 +10,12 @@ Under target/uberjar you'll find standalone jar to run.
 
 ## Usage
 
-FIXME: explanation
-
     $ java -jar profile2ddl-0.1.0-standalone.jar [args]
 
 ## Options
 
--i PATH - path with csv profile files created by `xsv stats`
--o PATH - path where the ddl files will be written
+`-i PATH` - path with csv profile files created by `xsv stats`
+`-o PATH` - path where the ddl files will be written
 
 ## Examples
 

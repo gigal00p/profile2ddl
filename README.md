@@ -23,7 +23,7 @@ Under target/uberjar you'll find standalone jar to run.
 
 ## License
 
-Copyright © 2019 Krzysztof Walkiwicz
+Copyright © 2019 Krzysztof Walkiewicz
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at

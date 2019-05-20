@@ -35,7 +35,7 @@
                       (= field-type :null)    (str field-name " VARCHAR(1)" line-terminator)   ; NULL type will be represented in database as VARCHAR(1)
                       (= field-type :nan)     (str field-name " VARCHAR(1)" line-terminator))] ; NaN type will be represented in database as VARCHAR(1)
     ;; Perform validation if key contains any db reserved word
-    (hp/validate-column-name field-name)
+    (hp/valid-column-name? field-name)
     ;; Format result and return as vector
     (->> (str/split row-ddl #" ")
          (apply format "    %-20s %s")

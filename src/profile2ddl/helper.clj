@@ -5,6 +5,7 @@
             [clojure.java.io :as io]
             [semantic-csv.core :as sc]
             [clojure.spec.alpha :as s]
+            [eftest.runner :refer [find-tests run-tests]]
             [expound.alpha :as expound]
             [orchestra.spec.test :as st]
             [clojure.reflect :as r]
@@ -40,7 +41,7 @@
       (do (error "Passed path is not a directory")
           (throw (Exception. "Passed path is not a directory"))))))
 
-
+ 
 (defn check-path-exist?
   [fs-path]
   (let [path (io/file fs-path)]
@@ -67,14 +68,14 @@
      doall)))
 
 
-(defn all-methods [x]
-    (->> x clojure.reflect/reflect
-           :members 
-           (filter :return-type)  
-           (map :name) 
-           sort 
-           (map #(str "." %) )
-           distinct))
+(defn all-methods [obj]
+  (->> obj clojure.reflect/reflect
+       :members 
+       (filter :return-type)  
+       (map :name) 
+       sort 
+       (map #(str "." %) )
+       distinct))
 
 
 (defn- is-reserved-db-word?
@@ -92,10 +93,12 @@
   (.toLowerCase (str/replace s #"\s+" "")))
 
 
-(defn validate-column-name
+(defn valid-column-name?
   [s]
   (if (is-reserved-db-word? s)
-    (do (warn "Field" [s] "is database reserved keyword. DDL statement will probably fail"))))
+    (do (warn "Field" [s] "is database reserved keyword. DDL statement will probably fail")
+        false)
+    true))
 
 
 (defn int-or-bigint

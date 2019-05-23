@@ -122,3 +122,7 @@
   (->> (get-full-path-files-in-dir dir)
        (map #(.getAbsolutePath %))
        (filter #(str/ends-with? % ".csv"))))
+
+(defn delete-recursively [fname]
+  (doseq [f (reverse (file-seq (clojure.java.io/file fname)))]
+     (clojure.java.io/delete-file f)))

@@ -1,5 +1,7 @@
 (ns profile2ddl.core-test
   (:require [clojure.test :refer :all]
+            [clojure.java.io :as io]
+            [profile2ddl.helper :as hp]
             [profile2ddl.core :refer :all]))
 
 
@@ -48,4 +50,17 @@
                 \,
                 \newline]]
     (is (= (emit-ddl-string true input) result))))
- 
+
+
+(deftest test-process-one-file
+  (let [test-file-name "/tmp/profile2ddl/tests/process-one-file/test-csv-profile.csv"
+        test-data "field,type,sum,min,max,min_length,max_length,mean,stddev\nSEQNUM NUMBER,Integer,5677245305943586,44,106596505,2,9,53296133.85074341,30778094.264473855\nVERSION,Unicode,,E1,E1,2,2,,"
+        expected-results "CREATE TABLE test-csv-profile (\n    seqnumnumber         INTEGER,\n    version              VARCHAR(2)\n);"
+        results-file-name "/tmp/profile2ddl/tests/process-one-file/test-csv-profile.ddl.sql"]
+    (do
+      (io/make-parents test-file-name)
+      (io/make-parents results-file-name)
+      (spit test-file-name test-data)
+      (process-one-file test-file-name "/tmp/profile2ddl/tests/process-one-file"))
+    (is (= (slurp results-file-name) expected-results)))
+  (hp/delete-recursively "/tmp/profile2ddl"))

@@ -77,3 +77,11 @@ VERSION,Unicode,,E1,E1,2,2,,")
         clean-tmp (if (->>(io/as-file test-file) .exists) (io/delete-file test-file))]
     (is (= result data))))
 
+
+(deftest test-files-to-process
+  (let [test-file "/tmp/profile2ddl-test-files-to-process.csv"
+        del-file-if-exist (if (->> (io/as-file test-file) .exists) (io/delete-file test-file))
+        data (spit test-file (str (java.time.LocalDateTime/now) " files-to-process,test,data\n"))
+        result (->> (files-to-process "/tmp") first)
+        clean-tmp (if (->>(io/as-file test-file) .exists) (io/delete-file test-file))]
+    (is (= result test-file))))

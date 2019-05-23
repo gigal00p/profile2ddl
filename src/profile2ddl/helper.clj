@@ -17,7 +17,7 @@
   "Reads a number from a string. Returns nil if not a number."
   [^String s]
   (cond (re-find #"^-?\d+\.?\d*$" s) (read-string s)
-    :else nil))
+        :else nil))
 
 
 (defn is-numeric-string?
@@ -25,6 +25,11 @@
   (if (= (number? (parse-string-to-number s)) true)
     true
     false))
+
+
+(defn exit [status msg]
+  (println msg)
+  (System/exit status))
 
 
 (defn get-full-path-files-in-dir
@@ -38,18 +43,25 @@
           (file-seq file)
           (->> file
                .listFiles)))
-      (do (error "Passed path is not a directory")
-          (throw (Exception. "Passed path is not a directory"))))))
+      (do (error (str "Passed path: `" path "` is not a directory"))
+          (exit -1 "Cannot proceed")))))
 
- 
+
+;; TODO refactor both functions
 (defn check-path-exist?
   [fs-path]
-  (let [path (io/file fs-path)]
-    (if (.isDirectory path)
-      true
-      (do (error "Passed path is not directory or does not exists:" (str "'"fs-path"'"))
-          (throw (Exception. "Passed path is not directory or does not exists: "))))))
-        
+  (try
+    (let [path (io/file fs-path)]
+      (if (.isDirectory path)
+        true
+        (do (error "Passed path is not directory or does not exists:" (str "`"fs-path"`"))
+            false)))))
+
+
+(s/fdef check-path-exist?
+  :args (s/cat :fs-path (not empty?))
+  :ret boolean?)
+
 
 (defn get-table-name-from-file
   [file-path]
@@ -125,4 +137,4 @@
 
 (defn delete-recursively [fname]
   (doseq [f (reverse (file-seq (clojure.java.io/file fname)))]
-     (clojure.java.io/delete-file f)))
+    (clojure.java.io/delete-file f)))

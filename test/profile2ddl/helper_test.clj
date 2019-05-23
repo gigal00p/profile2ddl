@@ -64,7 +64,8 @@ VERSION,Unicode,,E1,E1,2,2,,")
 (deftest test-int-or-bigint
   (let [min -2147483648
         max 2147483647]
-    (is (= (int-or-bigint min max) " INTEGER"))))
+    (is (= (int-or-bigint min max) " INTEGER"))
+    (is (= (int-or-bigint (- min 10000) (+ max 10000)) " BIGINT"))))
 
 
 (deftest test-persist-file
@@ -74,7 +75,7 @@ VERSION,Unicode,,E1,E1,2,2,,")
         path test-file
         action (persist-file path data)
         result (slurp path)
-        clean-tmp (if (->>(io/as-file test-file) .exists) (io/delete-file test-file))]
+        clean-tmp (if (->> (io/as-file test-file) .exists) (io/delete-file test-file))]
     (is (= result data))))
 
 

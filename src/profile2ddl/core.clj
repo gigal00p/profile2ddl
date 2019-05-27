@@ -89,5 +89,11 @@
           files (hp/files-to-process input-dir)]
       (do (if (hp/check-path-exist? input-dir) (info "Input directory is" input-dir) (hp/exit 1 "Dir does not exist, exiting."))
           (if (hp/check-path-exist? output-dir) (info "Output directory is" output-dir) (hp/exit 1 "Dir does not exist, exiting."))
+      (do (if (hp/check-path-exist? input-dir)
+            (info "Input directory is" input-dir)
+            (hp/exit 1 "Dir does not exist, exiting."))
+          (if (hp/check-path-exist? output-dir)
+            (info "Output directory is" output-dir)
+            (hp/exit 1 "Dir does not exist, exiting."))
           (info "Files to process are" (pr-str files)))
       (doall (map #(process-one-file % output-dir) files)))))

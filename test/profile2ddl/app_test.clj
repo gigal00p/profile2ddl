@@ -1,8 +1,8 @@
-(ns profile2ddl.core-test
+(ns profile2ddl.app-test
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
             [profile2ddl.helper :as hp]
-            [profile2ddl.core :refer :all]))
+            [profile2ddl.app :as ap :refer :all]))
 
 
 (deftest test-emit-ddl-string
@@ -49,7 +49,7 @@
                 \R
                 \,
                 \newline]]
-    (is (= (emit-ddl-string true input) result))))
+    (is (= (ap/emit-ddl-string true input) result))))
 
 
 (deftest test-process-one-file
@@ -61,6 +61,6 @@
       (io/make-parents test-file-name)
       (io/make-parents results-file-name)
       (spit test-file-name test-data)
-      (process-one-file test-file-name "/tmp/profile2ddl/tests/process-one-file"))
+      (ap/process-one-file test-file-name "/tmp/profile2ddl/tests/process-one-file"))
     (is (= (slurp results-file-name) expected-results)))
   (hp/delete-recursively "/tmp/profile2ddl"))

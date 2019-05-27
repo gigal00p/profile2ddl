@@ -4,7 +4,7 @@
             [clojure.java.io :as io]
             [clojure.spec.alpha :as s]
             [taoensso.timbre :as timbre
-             :refer [log  trace  debug  info  warn  error  fatal]]
+             :refer [log  trace  debug  info  warn  error  fatal errorf]]
             [clojure.tools.cli :refer [parse-opts]]
             [eftest.runner :refer [find-tests run-tests]]
             [expound.alpha :as expound]
@@ -82,15 +82,20 @@
   (let [{:keys [options arguments errors summary]} (parse-opts args cli-options)]
     (cond
       (:help options) (hp/exit 0 (help summary))
-      (not= (count options) 2) (hp/exit 1 (help summary)))
-    (let [input-dir (->> options :input)
-          output-dir (->> options :output)
-          files (hp/files-to-process input-dir)]
-      (do (if (hp/check-path-exist? input-dir)
-            (info "Input directory is" input-dir)
-            (hp/exit 1 "Dir does not exist, exiting."))
-          (if (hp/check-path-exist? output-dir)
-            (info "Output directory is" output-dir)
-            (hp/exit 1 "Dir does not exist, exiting."))
-          (info "Files to process:" (count files)))
-      (doall (map #(process-one-file % output-dir) files)))))
+      (not= (count options) 2) (hp/exit 0 (help summary))
+      :else
+      (try
+        (let [input-dir (->> options :input)
+              output-dir (->> options :output)
+              files (hp/files-to-process input-dir)]
+          (do (if (hp/check-path-exist? input-dir)
+                (info "Input directory is" input-dir)
+                (hp/exit 1 "Dir does not exist, exiting."))
+              (if (hp/check-path-exist? output-dir)
+                (info "Output directory is" output-dir)
+                (hp/exit 1 "Dir does not exist, exiting."))
+              (info "Files to process:" (count files)))
+          (doall (map #(process-one-file % output-dir) files)))
+        (catch Exception e
+          (timbre/errorf "Something when wrong: %s" (.getMessage ^Exception e))
+          (System/exit 1))))))

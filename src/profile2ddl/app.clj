@@ -1,13 +1,8 @@
 (ns profile2ddl.app
   (:gen-class)
   (:require [clojure.string :as str]
-            [clojure.java.io :as io]
-            [clojure.spec.alpha :as s]
-            [taoensso.timbre :as timbre
-             :refer [log  trace  debug  info  warn  error  fatal errorf]]
-            [clojure.tools.cli :refer [parse-opts]]
+            [taoensso.timbre :as timbre :refer [info]]
             [eftest.runner :refer [find-tests run-tests]]
-            [expound.alpha :as expound]
             [profile2ddl.helper :as hp]))
 
 

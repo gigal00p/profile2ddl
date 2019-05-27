@@ -12,8 +12,7 @@
 
 (def cli-options
   [["-i" "--input DIR" "Directory with profiles csv files produced by xsv tool"]
-   ["-o" "--output DIR" "Directory where DDL sql files will be written"
-    :required "Output directory"]
+   ["-o" "--output DIR" "Directory where DDL sql files will be written"]
    ["-h" "--help"]])
 
 
@@ -87,8 +86,6 @@
     (let [input-dir (->> options :input)
           output-dir (->> options :output)
           files (hp/files-to-process input-dir)]
-      (do (if (hp/check-path-exist? input-dir) (info "Input directory is" input-dir) (hp/exit 1 "Dir does not exist, exiting."))
-          (if (hp/check-path-exist? output-dir) (info "Output directory is" output-dir) (hp/exit 1 "Dir does not exist, exiting."))
       (do (if (hp/check-path-exist? input-dir)
             (info "Input directory is" input-dir)
             (hp/exit 1 "Dir does not exist, exiting."))

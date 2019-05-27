@@ -92,5 +92,5 @@
           (if (hp/check-path-exist? output-dir)
             (info "Output directory is" output-dir)
             (hp/exit 1 "Dir does not exist, exiting."))
-          (info "Files to process are" (pr-str files)))
+          (info "Files to process:" (count files)))
       (doall (map #(process-one-file % output-dir) files)))))

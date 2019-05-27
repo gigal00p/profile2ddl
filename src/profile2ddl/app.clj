@@ -38,7 +38,7 @@
         ;; need this distinction because last element do not need coma appanded
         majority-ddls (into [] (map #(emit-ddl-string true %) records-map))
         last-ddl (emit-ddl-string false last-entry)
-        table-end-stm ["\n);"]]
+        table-end-stm ["\n);\n"]]
     (->> (flatten [create-table-stm 
                    majority-ddls
                    last-ddl

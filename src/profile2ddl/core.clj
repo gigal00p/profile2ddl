@@ -45,5 +45,5 @@
               (timbre/info "Files to process:" (count files)))
           (doall (map #(ap/process-one-file % output-dir) files)))
         (catch Exception e
-          (timbre/errorf "Something when wrong: %s" (.getMessage ^Exception e))
+          (timbre/errorf "Something went wrong: %s" (.getMessage ^Exception e))
           (System/exit 1))))))

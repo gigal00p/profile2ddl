@@ -1,4 +1,4 @@
-# profile2ddl - convert output of xsv stats into ddl file
+# profile2ddl - convert output of xsv stats into ddl file [![CircleCI](https://circleci.com/gh/gigal00p/profile2ddl.svg?style=svg)](https://circleci.com/gh/gigal00p/profile2ddl)
 
 This program converts output created by runnig `xsv stats` against csv file into sql `create table` file.
 You can find xsv [here](https://github.com/BurntSushi/xsv).

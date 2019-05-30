@@ -1,6 +1,6 @@
 (ns profile2ddl.helper
   (:gen-class)
-  (:require [taoensso.timbre :as timbre :refer [log  trace  debug  info  warn  error  fatal]]
+  (:require [taoensso.timbre :as timbre :refer [debug  info  warn  error  fatal]]
             [clojure.string :as str]
             [clojure.java.io :as io]
             [semantic-csv.core :as sc]
@@ -54,8 +54,7 @@
     (let [path (io/file fs-path)]
       (if (.isDirectory path)
         true
-        (do (error "Passed path is not directory or does not exists:" (str "`"fs-path"`"))
-            false)))))
+        false))))
 
 
 (s/fdef check-path-exist?

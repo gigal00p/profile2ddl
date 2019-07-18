@@ -1,6 +1,9 @@
 version: 2
 jobs:
   build:
+    branches:
+      only:
+        - master
     working_directory: ~/profile2ddl
     docker:
       - image: circleci/clojure:lein-2.7.1
